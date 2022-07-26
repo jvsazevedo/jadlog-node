@@ -14,18 +14,30 @@ export class RequestHandler {
             baseURL: `${Configs.baseApiUrl}`,
             headers: {
                 'Content-Type': 'application/json',
-                'Authentication': `${Configs.grantType} ${token}`
+                'Authorization': `${Configs.grantType} ${token}`
             },
         });
     }
 
     async postAsync<Type>(params: any, endpoint: string) {
         try {
+            this.configureInterceptors();
             const response = await this._httpClient.post<Type>(endpoint, params);
 
             return response.data;
-        } catch (e) {
+        } catch (e: any) {
             throw parseError(e);
         }
+    }
+
+    configureInterceptors() {
+        axios.interceptors.request.use(function (config) {
+            // Do something before request is sent
+            console.log(config)
+            return config;
+        }, function (error) {
+            // Do something with request error
+            return Promise.reject(error);
+        })
     }
 }

@@ -5,7 +5,7 @@ import {ShippingParams} from "../../src/utils/interfaces/shipping";
 let handler: JadlogHandler;
 
 function initializePackage() {
-    handler = JadlogNode('token');
+    handler = JadlogNode('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOjEwODYzMiwiZHQiOiIyMDIyMDUxMiJ9.kHLfblAMRNsNo-q7tTe0DYtZMpZvs386Yg_417PJEOc');
 }
 
 describe("Shipping operations", () => {
@@ -31,7 +31,7 @@ describe("Shipping operations", () => {
         }
         const response = await handler.calculateShipping(params);
 
-        expect(response.frete).toBe(Array);
-
+        expect(response.shipping[0]).not.toHaveProperty('error');
+        expect(response.shipping[0]).toHaveProperty('total_value')
     });
 });

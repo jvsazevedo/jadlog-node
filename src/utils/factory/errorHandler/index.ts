@@ -2,21 +2,23 @@ export function parseError(e: any) {
   const error = {
       success: false,
       response: {
-          msg: '',
-          errorId: 0
+          error: null,
+          details: null
       }
-  }
+  };
+
   if (!e.response) {
-      error.response.msg = e.message || e;
+      error.response.details = e.message || e;
   } else {
-      error.response.msg =
-          e.response.error
-              ? e.response.error.descricao
-              : e.response.error;
-      error.response.errorId =
-          e.response.error
-            ? e.response.error.id
-            : e.response.error;
+      error.response.error =
+          e.response.data.erro
+              ? e.response.data.status
+              : e.response.data;
+      error.response.details =
+          e.response.data.erro
+            ? e.response.data.erro
+            : null;
   }
+
   return error;
 }
