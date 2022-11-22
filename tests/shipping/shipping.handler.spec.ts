@@ -15,13 +15,13 @@ describe("Shipping operations", () => {
     test("Should return estimated cost for shipping", async () => {
         const params: ShippingParams = {
             shipping: [{
-                from: '06233200',
-                to: '17213580',
+                from: '85801100',
+                to: '12225470',
                 charge_at_destination: "N",
                 weight: 13.78,
-                document: '12345678901234',
-                account: '000001',
-                contract: '123',
+                document: '42650212000164',
+                account: '027535',
+                contract: '897',
                 modality: 3,
                 delivery_type: 'D',
                 insurance_type: 'N',
@@ -30,6 +30,7 @@ describe("Shipping operations", () => {
             }]
         }
         const response = await handler.calculateShipping(params);
+        console.log(response);
 
         expect(response.shipping[0]).not.toHaveProperty('error');
         expect(response.shipping[0]).toHaveProperty('total_value')

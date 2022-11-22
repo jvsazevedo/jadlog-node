@@ -7,6 +7,13 @@ import {
 import {RequestHandler} from "../utils/factory/requestHandler";
 import {Configs} from "../utils/config";
 import {parseError} from "../utils/factory/errorHandler";
+import {
+    OrderIncludeModel,
+    IncludeOrderResponseModel,
+    CancelOrderParams,
+    CancelOrderResponse,
+    TrackOrderResponse
+} from "../utils/interfaces/order";
 
 
 export class JadlogHandler {
@@ -16,6 +23,7 @@ export class JadlogHandler {
         this._requestHandler = requestHandler;
     }
 
+    // Shipping
     async calculateShipping(params: ShippingParams) {
         try {
             const dataModel: ShippingParamsModelData[] = [];
@@ -72,6 +80,73 @@ export class JadlogHandler {
             return responseObj;
         } catch (e) {
             throw e;
+        }
+    }
+
+    // Orders
+    async includeOrder(data: OrderIncludeModel) {
+        try {
+            const response =  await this._requestHandler
+                .postAsync<IncludeOrderResponseModel>(data, Configs.endpoints.includeOrder);
+
+            return {
+                code: response.codigo,
+                status: response.status,
+                shipmentId: response.shipmentId
+            }
+
+        } catch (e) {
+            throw parseError(e);
+        }
+    }
+
+    async cancelOrder(data: CancelOrderParams) {
+        try {
+            let response = null;
+            if(data.codigo) {
+                const obj = { codigo: data.codigo };
+                response = await this._requestHandler
+                    .postAsync<CancelOrderResponse>(obj, Configs.endpoints.cancelOrder);
+            }
+
+            if(data.shipmentId) {
+                const obj = { shipmentId: data.shipmentId };
+                response = await this._requestHandler
+                    .postAsync<CancelOrderResponse>(obj, Configs.endpoints.cancelOrder);
+            }
+
+            return {
+                status: response?.status,
+                shipmentId: response?.shipmentId
+            }
+
+        } catch (e) {
+            throw parseError(e);
+        }
+    }
+
+    // Tracking
+    async trackOrderByCode(codes: Array<string>) {
+        try {
+            const obj: Array<object> = [];
+
+            codes.map((code) => {
+                obj.push({
+                    codigo: code
+                });
+            });
+
+            if(obj.length > 0) {
+                const response =  await this._requestHandler
+                    .postAsync<TrackOrderResponse>({
+                        consulta: obj
+                }, Configs.endpoints.trackOrder);
+
+                return response.consulta;
+            }
+
+        } catch (e) {
+            throw parseError(e);
         }
     }
 }
